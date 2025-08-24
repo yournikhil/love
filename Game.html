@@ -1,108 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
   <title>Catch My Love ❤️</title>
   <style>
-    /* Base */
-    :root {
-      --bg1: #ff9a9e;
-      --bg2: #fad0c4;
-      --text: #ffffff;
-      --accent: #ff6b6b;
-      --accent-hover: #ff4757;
-    }
-
-    html, body {
+    body {
       margin: 0;
       padding: 0;
-      height: 100%;
-      font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
-      background: linear-gradient(to top, var(--bg1), var(--bg2));
-      color: var(--text);
-      /* Prevent pull-to-refresh/scroll during play on mobile */
-      overscroll-behavior: none;
-      touch-action: none;
-    }
-
-    /* Use dynamic viewport height for mobile UI bars */
-    #gameArea {
-      position: relative;
-      width: 100vw;
-      height: 100dvh; /* better on mobile than 100vh */
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(to top, #ff9a9e, #fad0c4);
       overflow: hidden;
     }
 
-    /* Player scales with screen size but caps at desktop size */
+    #gameArea {
+      position: relative;
+      width: 100vw;
+      height: 100dvh; /* more stable on phones */
+      overflow: hidden;
+    }
+
     #player {
       position: absolute;
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      font-size: min(12vw, 50px);
-      line-height: 1;
-      user-select: none;
-      -webkit-user-select: none;
-      pointer-events: none; /* allow touches to pass through */
+      font-size: 80px; /* Increased player emoji size */
     }
 
-    /* Falling items also scale */
     .falling {
       position: absolute;
-      font-size: min(8vw, 30px);
-      line-height: 1;
-      animation: fall linear forwards;
-      will-change: transform;
-      user-select: none;
-      -webkit-user-select: none;
+      font-size: 4em; /* Increased falling emoji size */
+      animation: fall linear;
     }
 
     @keyframes fall {
-      from { transform: translateY(-50px); }
-      to { transform: translateY(100dvh); }
+      from { top: -50px; }
+      to { top: 100vh; }
     }
 
     #scoreBoard, #livesBoard {
       position: absolute;
-      top: 16px;
-      font-size: clamp(14px, 3.2vw, 20px);
-      font-weight: 700;
-      text-shadow: 0 2px 6px rgba(0,0,0,0.25);
+      top: 20px;
+      font-size: 2.5em; /* Increased scoreboard font size */
+      font-weight: bold;
+      color: #fff;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
     }
-    #scoreBoard { left: 16px; }
-    #livesBoard { right: 16px; }
+
+    #scoreBoard { left: 20px; }
+    #livesBoard { right: 20px; }
 
     #message {
       position: absolute;
-      top: 45%;
+      top: 40%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: clamp(16px, 3.6vw, 22px);
-      font-weight: 700;
+      font-size: 2.5em; /* Increased win/lose message size */
+      font-weight: bold;
       color: #d6336c;
       display: none;
       text-align: center;
-      max-width: 560px;
-      padding: 0 16px;
+      max-width: 90%;
     }
 
     button {
-      margin-top: 16px;
-      padding: 14px 28px;
-      font-size: clamp(14px, 3.6vw, 18px);
-      background: var(--accent);
-      color: #fff;
+      margin-top: 20px;
+      padding: 15px 30px;
+      font-size: 1.2em;
+      background: #ff6b6b;
+      color: white;
       border: none;
       border-radius: 20px;
       cursor: pointer;
-      transition: background .25s ease;
+      transition: 0.3s;
     }
-    button:hover { background: var(--accent-hover); }
 
-    /* On very small devices keep everything accessible */
-    @media (max-width: 360px) {
-      #player { bottom: 12px; }
+    button:hover {
+      background: #ff4757;
     }
   </style>
 </head>
@@ -110,12 +84,9 @@
   <div id="gameArea">
     <div id="scoreBoard">Score: 0</div>
     <div id="livesBoard">Lives: 3</div>
-    <div id="player" aria-label="player">🪼</div>
+    <div id="player">🪼</div>
     <div id="message">
-      <button id="playAgainBtn">Play Again</button>
-      <div style="margin-top:8px">
-        <button id="tiltBtn" style="background:#845EF7">Enable Tilt Control</button>
-      </div>
+      <button onclick="location.reload()">Play Again</button>
     </div>
   </div>
 
@@ -125,177 +96,88 @@
     const scoreBoard = document.getElementById("scoreBoard");
     const livesBoard = document.getElementById("livesBoard");
     const message = document.getElementById("message");
-    const playAgainBtn = document.getElementById("playAgainBtn");
-    const tiltBtn = document.getElementById("tiltBtn");
 
     let score = 0;
-    let lives = 5;
+    let lives = 7;
     let gameOver = false;
-    let dropTimer = null;
 
-    // --- Controls ---
-    // Mouse (desktop)
+    // Move player with mouse/touch/keyboard
     document.addEventListener("mousemove", (e) => {
-      movePlayerTo(e.clientX);
+      player.style.left = e.clientX - player.offsetWidth / 2 + "px";
     });
-
-    // Keyboard (desktop)
     document.addEventListener("keydown", (e) => {
-      const step = Math.max(24, Math.round(window.innerWidth * 0.04));
       let pos = player.offsetLeft;
-      if (e.key === "ArrowLeft") movePlayerTo(pos - step + player.offsetWidth / 2);
-      if (e.key === "ArrowRight") movePlayerTo(pos + step + player.offsetWidth / 2);
+      if (e.key === "ArrowLeft" && pos > 0) player.style.left = pos - 40 + "px";
+      if (e.key === "ArrowRight" && pos < window.innerWidth - player.offsetWidth) player.style.left = pos + 40 + "px";
     });
-
-    // Touch (mobile)
+    // Touch support for phones
     gameArea.addEventListener("touchmove", (e) => {
-      const t = e.touches[0];
-      if (!t) return;
-      e.preventDefault(); // prevent page scroll while playing
-      movePlayerTo(t.clientX);
-    }, { passive: false });
-
-    // Optional: Tilt control (requires permission on iOS)
-    let tiltEnabled = false;
-    let lastGamma = 0;
-    tiltBtn.addEventListener('click', async () => {
-      try {
-        if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
-          const perm = await DeviceMotionEvent.requestPermission();
-          if (perm !== 'granted') return;
-        }
-        tiltEnabled = true;
-        tiltBtn.textContent = 'Tilt Enabled';
-        tiltBtn.disabled = true;
-      } catch (err) {
-        console.warn('Tilt permission error:', err);
-      }
+      const touchX = e.touches[0].clientX;
+      player.style.left = touchX - player.offsetWidth / 2 + "px";
     });
 
-    window.addEventListener('deviceorientation', (e) => {
-      if (!tiltEnabled) return;
-      const gamma = e.gamma; // left-right tilt
-      if (gamma == null) return;
-      // Normalize tilt to screen width
-      const maxTilt = 45; // degrees considered full range
-      const clamped = Math.max(-maxTilt, Math.min(maxTilt, gamma));
-      const center = window.innerWidth / 2;
-      const range = (window.innerWidth - player.offsetWidth) / 2;
-      const offset = (clamped / maxTilt) * range;
-      movePlayerTo(center + offset);
-      lastGamma = gamma;
-    });
-
-    function movePlayerTo(clientX) {
-      const half = player.offsetWidth / 2;
-      let x = clientX - half;
-      x = Math.max(0, Math.min(window.innerWidth - player.offsetWidth, x));
-      player.style.left = x + 'px';
-    }
-
-    // --- Game Logic ---
     function getItemType() {
-      const rand = Math.random() * 100;
-      if (rand < 30) return '❤️'; // 30% good
-      return '💔'; // 70% bad
+      let rand = Math.random() * 100;
+      if (rand < 30) return "❤️"; // 30% good
+      return "💔";                // 70% bad (or jellyfish)
     }
 
     function createItem() {
       if (gameOver) return;
-      const item = document.createElement('div');
-      item.classList.add('falling');
-      const type = getItemType();
-      item.textContent = type;
-      item.style.left = Math.random() * (window.innerWidth - 30) + 'px';
-      item.style.animationDuration = (Math.random() * 2 + 3) + 's';
+      const item = document.createElement("div");
+      item.classList.add("falling");
+      let type = getItemType();
+      item.innerHTML = type;
+      item.style.left = Math.random() * (window.innerWidth - 30) + "px";
+      item.style.animationDuration = Math.random() * 2 + 3 + "s";
       gameArea.appendChild(item);
 
-      // Collision loop using rAF for smoother checks
-      let alive = true;
-      function check() {
-        if (!alive || gameOver) return;
-        const itemRect = item.getBoundingClientRect();
-        const playerRect = player.getBoundingClientRect();
+      let fallInterval = setInterval(() => {
+        let itemTop = item.offsetTop;
+        let itemLeft = item.offsetLeft;
+        let playerLeft = player.offsetLeft;
+        let playerTop = player.offsetTop;
 
-        const overlap = !(
-          itemRect.right < playerRect.left ||
-          itemRect.left > playerRect.right ||
-          itemRect.bottom < playerRect.top ||
-          itemRect.top > playerRect.bottom
-        );
-
-        if (overlap) {
-          if (type === '❤️') {
+        if (
+          itemTop + 50 >= playerTop &&
+          itemLeft > playerLeft - 50 &&
+          itemLeft < playerLeft + player.offsetWidth
+        ) {
+          if (type === "❤️") {
             score++;
-            scoreBoard.textContent = 'Score: ' + score;
+            scoreBoard.textContent = "Score: " + score;
             if (score >= 7) endGame(true);
-          } else {
+          } else if (type === "💔") {
             lives--;
-            livesBoard.textContent = 'Lives: ' + lives;
+            livesBoard.textContent = "Lives: " + lives;
             if (lives <= 0) endGame(false);
           }
           item.remove();
-          alive = false;
-          return;
+          clearInterval(fallInterval);
         }
 
-        if (itemRect.top > window.innerHeight) {
+        if (itemTop > window.innerHeight) {
           item.remove();
-          alive = false;
-          return;
+          clearInterval(fallInterval);
         }
-        requestAnimationFrame(check);
-      }
-      requestAnimationFrame(check);
+      }, 50);
 
-      // Safety cleanup in case animation ends but rAF lingers
-      setTimeout(() => { if (item.parentNode) item.remove(); alive = false; }, 7000);
+      setTimeout(() => { if (item.parentNode) item.remove(); }, 6000);
     }
 
-    function startDrops() {
-      dropTimer = setInterval(createItem, 800);
-    }
-
-    function stopDrops() {
-      if (dropTimer) clearInterval(dropTimer);
-      dropTimer = null;
-    }
+    let drop = setInterval(createItem, 800);
 
     function endGame(win) {
-      stopDrops();
-      document.querySelectorAll('.falling').forEach(el => el.remove());
+      clearInterval(drop);
+      document.querySelectorAll(".falling").forEach((h) => h.remove());
       gameOver = true;
-      message.innerHTML = `${win ?
-        `Just like you ignored all the broken heart emojis right now, promise me to ignore it for the entire life, let there be no heartbreak between us and we'll live happily ever after. I love you.` :
-        `Even if some hearts break along the way, I will always be here with you. Together we’ll turn every heartbreak into love, and nothing can shake us.`}
-        <br><button id="playAgainBtn">${win ? 'Play Again' : 'Try Again'}</button>
-        <div style="margin-top:8px"><button id="tiltBtn" style="background:#845EF7">Enable Tilt Control</button></div>`;
-      message.style.display = 'block';
-
-      // Rebind buttons in the new HTML
-      document.getElementById('playAgainBtn').addEventListener('click', () => location.reload());
-      document.getElementById('tiltBtn').addEventListener('click', async () => {
-        try {
-          if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
-            const perm = await DeviceMotionEvent.requestPermission();
-            if (perm !== 'granted') return;
-          }
-          tiltEnabled = true;
-          const btn = document.getElementById('tiltBtn');
-          btn.textContent = 'Tilt Enabled';
-          btn.disabled = true;
-        } catch (err) { console.warn(err); }
-      });
+      if (win) {
+        message.innerHTML = ` 😘YOU WIN!!!Just like you ignored all the broken heart emojis right now, promise me to ignore it for the entire life, let there be no heartbreak between us and we'll live happily ever after. I love you💛.<br><button onclick="location.reload()">Play Again</button>`;
+      } else {
+        message.innerHTML = `Even if some hearts break along the way, I will always be here with you. Together we’ll turn every heartbreak into love, and nothing can shake us🤗.<br><button onclick="location.reload()">Try Again</button>`;
+      }
+      message.style.display = "block";
     }
-
-    // Prevent page scroll when swiping in game area (extra safety)
-    document.body.addEventListener('touchmove', (e) => {
-      e.preventDefault();
-    }, { passive: false });
-
-    // Start game
-    startDrops();
   </script>
 </body>
 </html>
-
