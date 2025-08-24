@@ -110,7 +110,7 @@
   <div id="gameArea">
     <div id="scoreBoard">Score: 0</div>
     <div id="livesBoard">Lives: 3</div>
-    <div id="player" aria-label="player">🧸</div>
+    <div id="player" aria-label="player">🪼</div>
     <div id="message">
       <button id="playAgainBtn">Play Again</button>
       <div style="margin-top:8px">
@@ -129,7 +129,7 @@
     const tiltBtn = document.getElementById("tiltBtn");
 
     let score = 0;
-    let lives = 3;
+    let lives = 5;
     let gameOver = false;
     let dropTimer = null;
 
@@ -228,7 +228,7 @@
           if (type === '❤️') {
             score++;
             scoreBoard.textContent = 'Score: ' + score;
-            if (score >= 15) endGame(true);
+            if (score >= 7) endGame(true);
           } else {
             lives--;
             livesBoard.textContent = 'Lives: ' + lives;
@@ -298,3 +298,4 @@
   </script>
 </body>
 </html>
+
