@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Catch My Love ❤️</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(to top, #ff9a9e, #fad0c4);
+      overflow: hidden;
+    }
+
+    #gameArea {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    #player {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 50px;
+    }
+
+    .falling {
+      position: absolute;
+      font-size: 30px;
+      animation: fall linear;
+    }
+
+    @keyframes fall {
+      from { top: -50px; }
+      to { top: 100vh; }
+    }
+
+    #scoreBoard, #livesBoard {
+      position: absolute;
+      top: 20px;
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    #scoreBoard { left: 20px; }
+    #livesBoard { right: 20px; }
+
+    #message {
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #d6336c;
+      display: none;
+      text-align: center;
+      max-width: 500px;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1em;
+      background: #ff6b6b;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #ff4757;
+    }
+  </style>
+</head>
+<body>
+  <div id="gameArea">
+    <div id="scoreBoard">Score: 0</div>
+    <div id="livesBoard">Lives: 3</div>
+    <div id="player">🧸</div>
+    <div id="message">
+      <button onclick="location.reload()">Play Again</button>
+    </div>
+  </div>
+
+  <script>
+    const gameArea = document.getElementById("gameArea");
+    const player = document.getElementById("player");
+    const scoreBoard = document.getElementById("scoreBoard");
+    const livesBoard = document.getElementById("livesBoard");
+    const message = document.getElementById("message");
+
+    let score = 0;
+    let lives = 3;
+    let gameOver = false;
+
+    // Move player
+    document.addEventListener("mousemove", (e) => {
+      player.style.left = e.clientX - player.offsetWidth / 2 + "px";
+    });
+    document.addEventListener("keydown", (e) => {
+      let pos = player.offsetLeft;
+      if (e.key === "ArrowLeft" && pos > 0) player.style.left = pos - 40 + "px";
+      if (e.key === "ArrowRight" && pos < window.innerWidth - player.offsetWidth) player.style.left = pos + 40 + "px";
+    });
+
+    // Item type
+    function getItemType() {
+      let rand = Math.random() * 100;
+      if (rand < 30) return "❤️";   // 30%
+      return "💔";                   // 70%
+    }
+
+    // Create items
+    function createItem() {
+      if (gameOver) return;
+      const item = document.createElement("div");
+      item.classList.add("falling");
+      let type = getItemType();
+      item.innerHTML = type;
+      item.style.left = Math.random() * (window.innerWidth - 30) + "px";
+      item.style.animationDuration = Math.random() * 2 + 3 + "s";
+      gameArea.appendChild(item);
+
+      let fallInterval = setInterval(() => {
+        let itemTop = item.offsetTop;
+        let itemLeft = item.offsetLeft;
+        let playerLeft = player.offsetLeft;
+        let playerTop = player.offsetTop;
+
+        // Collision detection
+        if (
+          itemTop + 30 >= playerTop &&
+          itemLeft > playerLeft - 30 &&
+          itemLeft < playerLeft + player.offsetWidth
+        ) {
+          if (type === "❤️") {
+            score++;
+            scoreBoard.textContent = "Score: " + score;
+            if (score >= 15) endGame(true);
+          } else if (type === "💔") {
+            lives--;
+            livesBoard.textContent = "Lives: " + lives;
+            if (lives <= 0) endGame(false);
+          }
+          item.remove();
+          clearInterval(fallInterval);
+        }
+
+        if (itemTop > window.innerHeight) {
+          item.remove();
+          clearInterval(fallInterval);
+        }
+      }, 50);
+
+      setTimeout(() => { if (item.parentNode) item.remove(); }, 6000);
+    }
+
+    let drop = setInterval(createItem, 800);
+
+    function endGame(win) {
+      clearInterval(drop);
+      document.querySelectorAll(".falling").forEach((h) => h.remove());
+      gameOver = true;
+      if (win) {
+        message.innerHTML = `Just like you ignored all the broken heart emojis right now, promise me to ignore it for the entire life, let there be no heartbreak between us and we'll live happily ever after. I love you.<br><button onclick="location.reload()">Play Again</button>`;
+      } else {
+        message.innerHTML = `Even if some hearts break along the way, I will always be here with you. Together we’ll turn every heartbreak into love, and nothing can shake us.<br><button onclick="location.reload()">Try Again</button>`;
+      }
+      message.style.display = "block";
+    }
+  </script>
+</body>
+</html>
