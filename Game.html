@@ -103,13 +103,13 @@
 <body>
   <div id="intro">
     <div><strong>Catch My Love ❤️</strong></div>
-    <p>Move the 🪼 to catch ❤️ and avoid 💔. Get 7 hearts to win!</p>
+    <p>Move the 🐼 to catch ❤️ and avoid 💔. Get 7 hearts to win!</p>
   </div>
 
   <div id="gameArea">
     <div id="scoreBoard">Score: 0</div>
-    <div id="livesBoard">Lives: 3</div>
-    <div id="player">🪼</div>
+    <div id="livesBoard">Lives: 7</div>
+    <div id="player">🐼</div>
     <div id="message"></div>
   </div>
 
@@ -139,7 +139,7 @@
     });
 
     function getItemType() {
-      return Math.random() < 0.3 ? "❤️" : "💔";
+      return Math.random() < 0.5 ? "❤️" : "💔";
     }
 
     function createItem() {
@@ -192,10 +192,11 @@
       document.querySelectorAll(".falling").forEach(h => h.remove());
       gameOver = true;
       message.innerHTML = win
-        ? `😘 YOU WIN!!!<br>Love you 💛<br><button onclick="location.reload()">Play Again</button>`
-        : `Even if hearts break 💔, I’ll always be with you 🤗.<br><button onclick="location.reload()">Try Again</button>`;
+        ? `😘 YOU WIN!!!<br>Just like you ignored all the broken heart emojis right now, promise me to ignore it for the entire life, let there be no heartbreak between us and we'll live happily ever after. I love you💛<br><button onclick="location.reload()">Play Again</button>`
+        : `Even if some hearts break along the way, I will always be here with you. Together we’ll turn every heartbreak into love, and nothing can shake us.🤗.<br><button onclick="location.reload()">Try Again</button>`;
       message.style.display = "block";
     }
   </script>
 </body>
 </html>
+
