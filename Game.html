@@ -2,47 +2,43 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Key line for best fit on phone -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Catch My Love ❤️</title>
   <style>
-    body {
+    html, body {
       margin: 0;
       padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
       font-family: "Segoe UI", sans-serif;
       background: linear-gradient(to top, #ff9a9e, #fad0c4);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      height: 100vh;
+      touch-action: none; /* prevents scroll while playing */
     }
 
-    header {
+    /* Title and instructions overlaid */
+    #intro {
+      position: absolute;
+      top: 10px;
+      width: 100%;
       text-align: center;
-      padding: 10px;
       color: #d6336c;
-      z-index: 2;
+      font-size: clamp(18px, 4vw, 28px);
+      z-index: 10;
     }
 
-    header h1 {
-      font-size: clamp(2em, 5vw, 3em);
-      margin: 10px 0 5px 0;
+    #intro p {
+      color: #333;
+      font-size: clamp(14px, 3.5vw, 20px);
+      margin: 5px 0;
     }
 
-    header p {
-      font-size: clamp(1em, 3vw, 1.4em);
-      color: #444;
-      max-width: 90%;
-      margin: 0 auto 10px auto;
-    }
-
-    /* The key fix: make the game area only take remaining space */
     #gameArea {
       position: relative;
-      width: 100vw;
-      flex: 1; /* fills remaining space below header */
+      width: 100%;
+      height: 100%;
       overflow: hidden;
-      background: transparent;
     }
 
     #player {
@@ -50,14 +46,13 @@
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      font-size: clamp(90px, 12vw, 110px);
-      z-index: 1;
+      font-size: clamp(80px, 15vw, 110px);
     }
 
     .falling {
       position: absolute;
-      font-size: clamp(4.5em, 10vw, 6em);
-      animation: fall linear;
+      font-size: clamp(60px, 12vw, 90px);
+      animation: fall linear forwards;
     }
 
     @keyframes fall {
@@ -67,60 +62,55 @@
 
     #scoreBoard, #livesBoard {
       position: absolute;
-      top: 20px;
-      font-size: clamp(2em, 5vw, 3em);
+      top: 10px;
+      font-size: clamp(18px, 5vw, 28px);
       font-weight: bold;
       color: #fff;
       text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+      z-index: 10;
     }
 
-    #scoreBoard { left: 20px; }
-    #livesBoard { right: 20px; }
+    #scoreBoard { left: 10px; }
+    #livesBoard { right: 10px; }
 
     #message {
       position: absolute;
-      top: 40%;
+      top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: clamp(2em, 5vw, 3em);
+      font-size: clamp(20px, 6vw, 40px);
       font-weight: bold;
       color: #d6336c;
-      display: none;
       text-align: center;
       max-width: 90%;
+      display: none;
+      z-index: 20;
     }
 
     button {
       margin-top: 20px;
-      padding: 15px 30px;
-      font-size: 1.2em;
+      padding: 12px 24px;
+      font-size: clamp(16px, 4vw, 24px);
       background: #ff6b6b;
       color: white;
       border: none;
       border-radius: 20px;
       cursor: pointer;
-      transition: 0.3s;
     }
-
-    button:hover {
-      background: #ff4757;
-    }
+    button:hover { background: #ff4757; }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Catch My Love ❤️</h1>
-    <p>Move the jellyfish 🪼 to catch the ❤️ hearts and avoid 💔 heartbreaks.<br>
-       Win by catching 7 hearts before losing all lives!</p>
-  </header>
+  <div id="intro">
+    <div><strong>Catch My Love ❤️</strong></div>
+    <p>Move the 🪼 to catch ❤️ and avoid 💔. Get 7 hearts to win!</p>
+  </div>
 
   <div id="gameArea">
     <div id="scoreBoard">Score: 0</div>
     <div id="livesBoard">Lives: 3</div>
     <div id="player">🪼</div>
-    <div id="message">
-      <button onclick="location.reload()">Play Again</button>
-    </div>
+    <div id="message"></div>
   </div>
 
   <script>
@@ -134,35 +124,35 @@
     let lives = 7;
     let gameOver = false;
 
-    document.addEventListener("mousemove", (e) => {
+    // Smooth control for mouse/touch/keyboard
+    document.addEventListener("mousemove", e => {
       player.style.left = e.clientX - player.offsetWidth / 2 + "px";
     });
-    document.addEventListener("keydown", (e) => {
+    document.addEventListener("keydown", e => {
       let pos = player.offsetLeft;
       if (e.key === "ArrowLeft" && pos > 0) player.style.left = pos - 40 + "px";
       if (e.key === "ArrowRight" && pos < window.innerWidth - player.offsetWidth) player.style.left = pos + 40 + "px";
     });
-    gameArea.addEventListener("touchmove", (e) => {
+    gameArea.addEventListener("touchmove", e => {
       const touchX = e.touches[0].clientX;
       player.style.left = touchX - player.offsetWidth / 2 + "px";
     });
 
     function getItemType() {
-      let rand = Math.random() * 100;
-      return rand < 30 ? "❤️" : "💔";
+      return Math.random() < 0.3 ? "❤️" : "💔";
     }
 
     function createItem() {
       if (gameOver) return;
       const item = document.createElement("div");
       item.classList.add("falling");
-      let type = getItemType();
+      const type = getItemType();
       item.innerHTML = type;
       item.style.left = Math.random() * (window.innerWidth - 30) + "px";
-      item.style.animationDuration = Math.random() * 2 + 3 + "s";
+      item.style.animationDuration = (Math.random() * 2 + 3) + "s";
       gameArea.appendChild(item);
 
-      let fallInterval = setInterval(() => {
+      const fallCheck = setInterval(() => {
         let itemTop = item.offsetTop;
         let itemLeft = item.offsetLeft;
         let playerLeft = player.offsetLeft;
@@ -177,35 +167,33 @@
             score++;
             scoreBoard.textContent = "Score: " + score;
             if (score >= 7) endGame(true);
-          } else if (type === "💔") {
+          } else {
             lives--;
             livesBoard.textContent = "Lives: " + lives;
             if (lives <= 0) endGame(false);
           }
           item.remove();
-          clearInterval(fallInterval);
+          clearInterval(fallCheck);
         }
 
         if (itemTop > window.innerHeight) {
           item.remove();
-          clearInterval(fallInterval);
+          clearInterval(fallCheck);
         }
       }, 50);
 
       setTimeout(() => { if (item.parentNode) item.remove(); }, 6000);
     }
 
-    let drop = setInterval(createItem, 800);
+    const drop = setInterval(createItem, 800);
 
     function endGame(win) {
       clearInterval(drop);
-      document.querySelectorAll(".falling").forEach((h) => h.remove());
+      document.querySelectorAll(".falling").forEach(h => h.remove());
       gameOver = true;
-      if (win) {
-        message.innerHTML = `😘 YOU WIN!!!<br>Just like you ignored 💔, promise me to ignore heartbreaks for life. Love you 💛.<br><button onclick="location.reload()">Play Again</button>`;
-      } else {
-        message.innerHTML = `Even if hearts break 💔, I’ll always be with you 🤗.<br><button onclick="location.reload()">Try Again</button>`;
-      }
+      message.innerHTML = win
+        ? `😘 YOU WIN!!!<br>Love you 💛<br><button onclick="location.reload()">Play Again</button>`
+        : `Even if hearts break 💔, I’ll always be with you 🤗.<br><button onclick="location.reload()">Try Again</button>`;
       message.style.display = "block";
     }
   </script>
