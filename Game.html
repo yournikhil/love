@@ -14,12 +14,14 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      height: 100vh;
     }
 
     header {
       text-align: center;
       padding: 10px;
       color: #d6336c;
+      z-index: 2;
     }
 
     header h1 {
@@ -34,10 +36,11 @@
       margin: 0 auto 10px auto;
     }
 
+    /* The key fix: make the game area only take remaining space */
     #gameArea {
       position: relative;
       width: 100vw;
-      height: 100dvh;
+      flex: 1; /* fills remaining space below header */
       overflow: hidden;
       background: transparent;
     }
@@ -47,12 +50,13 @@
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      font-size: clamp(90px, 12vw, 110px); /* Larger and responsive */
+      font-size: clamp(90px, 12vw, 110px);
+      z-index: 1;
     }
 
     .falling {
       position: absolute;
-      font-size: clamp(4.5em, 10vw, 6em); /* Larger falling emoji */
+      font-size: clamp(4.5em, 10vw, 6em);
       animation: fall linear;
     }
 
@@ -130,7 +134,6 @@
     let lives = 7;
     let gameOver = false;
 
-    // Move player with mouse/touch/keyboard
     document.addEventListener("mousemove", (e) => {
       player.style.left = e.clientX - player.offsetWidth / 2 + "px";
     });
