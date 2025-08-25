@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Fix for mobile scaling -->
 <title>Happy Birthday Shakthi ❤️</title>
 <style>
   body {
@@ -13,28 +14,26 @@
     text-align: center;
     height: 100vh;
     color: #000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
 
   .container {
-    position: relative;
-    top: 50%;
-    transform: translateY(-50%);
     width: 100%;
     max-width: 1200px;
-    margin: 0 auto;
     z-index: 2;
+    padding: 10px;
   }
 
   h1 {
-    font-size: 2.8em;
+    font-size: 7vw; /* responsive font */
     margin-bottom: 20px;
     display: none;
     animation: shimmer 2s infinite;
-    max-width: 900px;
-    margin-left: auto;
-    margin-right: auto;
     color: #000;
-    -webkit-text-stroke: 1.5px black; /* Black outline */
+    -webkit-text-stroke: 1.5px black;
     font-weight: bold;
   }
 
@@ -44,7 +43,7 @@
   }
 
   .heart-lock {
-    font-size: 80px;
+    font-size: 15vw; /* responsive size */
     cursor: pointer;
     animation: pulse 1.5s infinite;
     margin-bottom: 20px;
@@ -57,8 +56,8 @@
   }
 
   .message {
-    font-size: 1.5em;
-    max-width: 800px;
+    font-size: 4vw; /* responsive font */
+    max-width: 90%;
     margin: 20px auto;
     opacity: 0;
     transition: opacity 1s, text-shadow 1s;
@@ -74,7 +73,7 @@
     padding: 15px 30px;
     background: #ff6b6b;
     color: #000;
-    font-size: 1.2em;
+    font-size: 4vw;
     font-weight: bold;
     border-radius: 30px;
     text-decoration: none;
@@ -129,24 +128,33 @@
     100% { transform: translateY(-100px); opacity: 0; }
   }
 
-  /* Portrait images layout */
- .portrait {
-position: absolute;
-width: 150px;
-height: 150px;
-border-radius: 50%;
-object-fit: cover;
-box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-opacity: 0;
-transition: opacity 1.5s ease;
+  /* Portrait images */
+  .portrait {
+    position: absolute;
+    width: 25vw; /* responsive */
+    height: 25vw;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    opacity: 0;
+    transition: opacity 1.5s ease;
   }
 
- #img1 { top: 10%; left: 12%; width: 200px; height: 180px; }
-#img2 { top: 5%; right: 10%; width: 180px; height: 180px; }
-#img3 { bottom: 10%; left: 12%; width: 150px; height: 150px; }
-#img4 { bottom: 12%; right: 12%; width: 150px; height: 150px; }
-#img5 { top: 10%; left: 10%; width: 200px; height: 200px; }
-#img6 { top: 10%; left: 1%; width: 180px; height: 180px; } /* repositioned */
+  #img1 { top: 10%; left: 5%; }
+  #img2 { top: 5%; right: 5%; }
+  #img3 { bottom: 10%; left: 5%; }
+  #img4 { bottom: 12%; right: 5%; }
+  #img5 { top: 10%; left: 35%; }
+  #img6 { bottom: 10%; right: 35%; }
+
+  /* Media queries for very small screens */
+  @media (max-width: 600px) {
+    h1 { font-size: 9vw; }
+    .message { font-size: 5vw; }
+    .btn-game { font-size: 5vw; padding: 10px 20px; }
+    .heart-lock { font-size: 18vw; }
+    .portrait { width: 30vw; height: 30vw; }
+  }
 </style>
 </head>
 <body>
@@ -168,7 +176,7 @@ transition: opacity 1.5s ease;
   </div>
 
   <!-- Portrait images -->
-  
+  <img src="img1.jpg" class="portrait" id="img1">
   <img src="img2.jpg" class="portrait" id="img2">
   <img src="img3.jpg" class="portrait" id="img3">
   <img src="img4.jpg" class="portrait" id="img4">
@@ -251,6 +259,3 @@ transition: opacity 1.5s ease;
   </script>
 </body>
 </html>
-
-
-
