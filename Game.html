@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Catch My Love ❤️</title>
   <style>
     body {
@@ -10,13 +11,35 @@
       font-family: "Segoe UI", sans-serif;
       background: linear-gradient(to top, #ff9a9e, #fad0c4);
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      text-align: center;
+      padding: 10px;
+      color: #d6336c;
+    }
+
+    header h1 {
+      font-size: clamp(2em, 5vw, 3em);
+      margin: 10px 0 5px 0;
+    }
+
+    header p {
+      font-size: clamp(1em, 3vw, 1.4em);
+      color: #444;
+      max-width: 90%;
+      margin: 0 auto 10px auto;
     }
 
     #gameArea {
       position: relative;
       width: 100vw;
-      height: 100dvh; /* more stable on phones */
+      height: 100dvh;
       overflow: hidden;
+      background: transparent;
     }
 
     #player {
@@ -24,12 +47,12 @@
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 80px; /* Increased player emoji size */
+      font-size: clamp(90px, 12vw, 110px); /* Larger and responsive */
     }
 
     .falling {
       position: absolute;
-      font-size: 4em; /* Increased falling emoji size */
+      font-size: clamp(4.5em, 10vw, 6em); /* Larger falling emoji */
       animation: fall linear;
     }
 
@@ -41,7 +64,7 @@
     #scoreBoard, #livesBoard {
       position: absolute;
       top: 20px;
-      font-size: 2.5em; /* Increased scoreboard font size */
+      font-size: clamp(2em, 5vw, 3em);
       font-weight: bold;
       color: #fff;
       text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
@@ -55,7 +78,7 @@
       top: 40%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 2.5em; /* Increased win/lose message size */
+      font-size: clamp(2em, 5vw, 3em);
       font-weight: bold;
       color: #d6336c;
       display: none;
@@ -81,6 +104,12 @@
   </style>
 </head>
 <body>
+  <header>
+    <h1>Catch My Love ❤️</h1>
+    <p>Move the jellyfish 🪼 to catch the ❤️ hearts and avoid 💔 heartbreaks.<br>
+       Win by catching 7 hearts before losing all lives!</p>
+  </header>
+
   <div id="gameArea">
     <div id="scoreBoard">Score: 0</div>
     <div id="livesBoard">Lives: 3</div>
@@ -110,7 +139,6 @@
       if (e.key === "ArrowLeft" && pos > 0) player.style.left = pos - 40 + "px";
       if (e.key === "ArrowRight" && pos < window.innerWidth - player.offsetWidth) player.style.left = pos + 40 + "px";
     });
-    // Touch support for phones
     gameArea.addEventListener("touchmove", (e) => {
       const touchX = e.touches[0].clientX;
       player.style.left = touchX - player.offsetWidth / 2 + "px";
@@ -118,8 +146,7 @@
 
     function getItemType() {
       let rand = Math.random() * 100;
-      if (rand < 30) return "❤️"; // 30% good
-      return "💔";                // 70% bad (or jellyfish)
+      return rand < 30 ? "❤️" : "💔";
     }
 
     function createItem() {
@@ -172,9 +199,9 @@
       document.querySelectorAll(".falling").forEach((h) => h.remove());
       gameOver = true;
       if (win) {
-        message.innerHTML = ` 😘YOU WIN!!!Just like you ignored all the broken heart emojis right now, promise me to ignore it for the entire life, let there be no heartbreak between us and we'll live happily ever after. I love you💛.<br><button onclick="location.reload()">Play Again</button>`;
+        message.innerHTML = `😘 YOU WIN!!!<br>Just like you ignored 💔, promise me to ignore heartbreaks for life. Love you 💛.<br><button onclick="location.reload()">Play Again</button>`;
       } else {
-        message.innerHTML = `Even if some hearts break along the way, I will always be here with you. Together we’ll turn every heartbreak into love, and nothing can shake us🤗.<br><button onclick="location.reload()">Try Again</button>`;
+        message.innerHTML = `Even if hearts break 💔, I’ll always be with you 🤗.<br><button onclick="location.reload()">Try Again</button>`;
       }
       message.style.display = "block";
     }
